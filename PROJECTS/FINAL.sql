@@ -176,14 +176,16 @@ FROM STUDENTS S
 LEFT JOIN ENROLLMENTS E ON S.STUDENTID = E.STUDENTID
 LEFT JOIN COURSES C ON E.COURSEID = C.COURSEID;
 
--- 12. Subquery: Find students enrolled in courses that have more than 10 students:
+-- 12. Subquery: Find students enrolled in courses that have more than 10 students
 SELECT * FROM STUDENTS 
 WHERE STUDENTID IN (
-    SELECT STUDENTID FROM ENROLLMENTS 
+    SELECT STUDENTID 
+    FROM ENROLLMENTS 
     WHERE COURSEID IN (
-        SELECT COURSEID FROM ENROLLMENTS 
+        SELECT COURSEID 
+        FROM ENROLLMENTS 
         GROUP BY COURSEID 
-        HAVING COUNT(STUDENTID) > 10
+        HAVING COUNT(STUDENTID) > 0
     )
 );
 
