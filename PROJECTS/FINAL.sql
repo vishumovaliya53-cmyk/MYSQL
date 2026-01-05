@@ -146,7 +146,7 @@ SELECT AVG(CREDITS) AS AverageCredits FROM COURSES;
 
 -- 8. Find the maximum salary of instructors in the Computer Science departmenT
 SELECT MAX('SALARY') FROM INSTRUCTORS I
-JOIN DEPARTMENTS D ON I.DEPARTMENTID = D.DEPARTMENTID
+JOIN DEPARTMENTS D ON I.DEPARTMENTID = D.DEPARTMENTID -- this column does not exist bcz salary is not in my table
 WHERE D.DEPARTMENTNAME = 'COMPUTER SCIENCE';
 
 -- 9. Count the number of students enrolled in each department.
