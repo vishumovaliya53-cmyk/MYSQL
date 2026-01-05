@@ -83,6 +83,7 @@ INSERT INTO DEPARTMENTS VALUES
 (4, 'CHEMISTRY'),
 (5, 'MECHANICAL'),
 (6, 'STASTICS');
+
 -- 1. CRUD
 
 -- === READ ===
@@ -124,4 +125,76 @@ DELETE FROM ENROLLMENTS WHERE ENROLLMENTID = 6;
 
 DELETE FROM DEPARTMENTS WHERE DEPARTMENTID = 6;
 
-SELECT * FROM ENROLLMENTS WHERE ENROLLMENTDATE < 2022-01-01;customers
+-- 2. Retrieve students who enrolled after 2022:
+SELECT * FROM STUDENTS 
+WHERE ENROLLMENTDATE > '2022-12-31';
+
+-- 3. Retrieve courses offered by the Mathematics department with a limit of 5:
+SELECT C.* FROM COURSES C
+JOIN DEPARTMENTS D ON C.DEPARTMENTID = D.DEPARTMENTID
+WHERE D.DEPARTMENTNAME = 'MATHEMATICS'
+LIMIT 5;
+
+-- 4. Number of students enrolled in each course (filter for courses with > 5 students):
+SELECT COURSEID, COUNT(STUDENTID) AS StudentCount
+FROM ENROLLMENTS
+GROUP BY COURSEID
+HAVING COUNT(STUDENTID) > 5;
+
+-- 7. Calculate the average number of credits for all courses:
+SELECT AVG(CREDITS) AS AverageCredits FROM COURSES;
+
+-- 8. Find the maximum salary of instructors in the Computer Science departmenT
+SELECT MAX('SALARY') FROM INSTRUCTORS I
+JOIN DEPARTMENTS D ON I.DEPARTMENTID = D.DEPARTMENTID
+WHERE D.DEPARTMENTNAME = 'COMPUTER SCIENCE';
+
+-- 9. Count the number of students enrolled in each department.
+SELECT D.DEPARTMENTNAME, COUNT(S.STUDENTID) AS TotalStudents
+FROM DEPARTMENTS D
+LEFT JOIN STUDENTS S ON D.DEPARTMENTID = S.STUDENTID
+GROUP BY D.DEPARTMENTNAME;
+
+-- 10. INNER JOIN: Retrieve students and their corresponding courses:
+SELECT S.FIRSTNAME, S.LASTNAME, C.COURSENAME
+FROM STUDENTS S
+INNER JOIN ENROLLMENTS E ON S.STUDENTID = E.STUDENTID
+INNER JOIN COURSES C ON E.COURSEID = C.COURSEID;
+
+-- 11. LEFT JOIN: Retrieve all students and their corresponding courses (if any):
+SELECT S.FIRSTNAME, S.LASTNAME, C.COURSENAME
+FROM STUDENTS S
+LEFT JOIN ENROLLMENTS E ON S.STUDENTID = E.STUDENTID
+LEFT JOIN COURSES C ON E.COURSEID = C.COURSEID;
+
+-- 12. Subquery: Find students enrolled in courses that have more than 10 students:
+SELECT * FROM STUDENTS 
+WHERE STUDENTID IN (
+    SELECT STUDENTID FROM ENROLLMENTS 
+    WHERE COURSEID IN (
+        SELECT COURSEID FROM ENROLLMENTS 
+        GROUP BY COURSEID 
+        HAVING COUNT(STUDENTID) > 10
+    )
+);
+
+-- 13. Extract the year from the EnrollmentDate of students:
+SELECT FIRSTNAME, LASTNAME, YEAR(ENROLLMENTDATE) AS EnrollmentYear 
+FROM STUDENTS;
+
+-- 14. Concatenate the instructor's first and last name:
+SELECT CONCAT(FIRSTNAME, ' ', LASTNAME) AS InstructorFullName 
+FROM INSTRUCTORS;
+
+-- 15. Calculate the running total of students enrolled in courses:
+SELECT ENROLLMENTDATE, 
+       COUNT(STUDENTID) OVER (ORDER BY ENROLLMENTDATE) AS RunningTotal
+FROM ENROLLMENTS;
+
+-- 16. Label students as 'Senior' or 'Junior' based on enrollment (> 4 years = Senior):
+SELECT FIRSTNAME, LASTNAME, ENROLLMENTDATE,
+       CASE 
+           WHEN DATEDIFF(CURRENT_DATE, ENROLLMENTDATE) / 365 > 4 THEN 'Senior'
+           ELSE 'Junior'
+       END AS StudentStatus
+FROM STUDENTS;
